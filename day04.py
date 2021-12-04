@@ -1,20 +1,22 @@
-with open("./input/day04.txt") as f:
-    draws = list(map(int, f.readline().split(",")))
-    f.readline()
+def read_input():
+    with open("./input/day04.txt") as f:
+        draws = list(map(int, f.readline().split(",")))
+        f.readline()
 
-    raw_boards = "".join(f.readlines())
-    raw_boards = raw_boards.split("\n\n")
-    boards = []
-    for b in raw_boards:
-        lines = b.split("\n")
-        board = []
-        for line in lines:
-            l = line.split(" ")
-            r = list(map(int, filter(lambda a: a, l)))
+        raw_boards = "".join(f.readlines())
+        raw_boards = raw_boards.split("\n\n")
+        boards = []
+        for b in raw_boards:
+            lines = b.split("\n")
+            board = []
+            for line in lines:
+                l = line.split(" ")
+                r = list(map(int, filter(lambda a: a, l)))
 
-            if len(r):
-                board.append(r)
-        boards.append(board)
+                if len(r):
+                    board.append(r)
+            boards.append(board)
+    return draws, boards
 
 def mark_items(draw, line):
     result = []
@@ -56,10 +58,11 @@ def check_board(board):
 
 
 def check_boards(boards):
-    for board in boards:
+    winners = []
+    for i, board in enumerate(boards):
         if check_board(board):
-            return board
-    return False
+            winners.append((i, board))
+    return winners
 
 def sum_unmarked(board):
     s = 0
@@ -69,11 +72,25 @@ def sum_unmarked(board):
                 s += c
     return s
 
+draws, boards = read_input()
 for draw in draws:
     boards = mark_all(draw, boards)
 
-    winner = check_boards(boards)
-    if winner:
+    winners = check_boards(boards)
+    if len(winners) == 1:
+        _, winner = winners[0]
         s = sum_unmarked(winner)
         print("Part 1 %s" % (draw * s))
         break
+
+draws, boards = read_input()
+for draw in draws:
+    boards = mark_all(draw, boards)
+
+    winners = check_boards(boards)
+    winners.reverse()
+    for i, winner in winners:
+        if len(boards) == 1:
+            s = sum_unmarked(winner)
+            print("Part 2 %s" % (draw * s))
+        boards.pop(i)
