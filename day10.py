@@ -5,6 +5,15 @@ with open("./input/day10.txt") as f:
         lines.append(list(r.strip()))
 
 
+matching = {
+    ")": "(",
+    "]": "[",
+    "}": "{",
+    ">": "<"
+
+}
+
+
 def find_illegal(line, inside=[]):
     if len(line) <= 0:
         return False, reversed(inside)
@@ -15,53 +24,37 @@ def find_illegal(line, inside=[]):
 
     if current in ["[", "{", "(", "<"]:
         new_inside.append(current)
-    elif current == "]":
+    else:
         inside_last = new_inside.pop()
-        if inside_last != "[":
-            return True, current
-    elif current == "}":
-        inside_last = new_inside.pop()
-        if inside_last != "{":
-            return True, current
-    elif current == ")":
-        inside_last = new_inside.pop()
-        if inside_last != "(":
-            return True, current
-    elif current == ">":
-        inside_last = new_inside.pop()
-        if inside_last != "<":
+        if inside_last != matching[current]:
             return True, current
     return find_illegal(tail, new_inside)
 
+vals1 = {
+    ")": 3,
+    "]": 57,
+    "}": 1197,
+    ">": 25137
+}
+
+vals2 = {
+    "(": 1,
+    "[": 2,
+    "{": 3,
+    "<": 4,
+}
 
 result1 = 0
 result2 = []
 for line in lines:
     incomplete, illegal = find_illegal(line)
     if incomplete:
-        if illegal == ")":
-            result1 += 3
-        elif illegal == "]":
-            result1 += 57
-        elif illegal == "}":
-            result1 += 1197
-        elif illegal == ">":
-            result1 += 25137
+        result1 += vals1[illegal]
     else:
         res = 0
         for i in illegal:
-            if i == "(":
-                res *= 5
-                res += 1
-            elif i == "[":
-                res *= 5
-                res += 2
-            elif i == "{":
-                res *= 5
-                res += 3
-            elif i == "<":
-                res *= 5
-                res += 4
+            res *= 5
+            res += vals2[i]
         result2.append(res)
 
 result2.sort()
