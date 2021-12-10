@@ -7,7 +7,7 @@ with open("./input/day10.txt") as f:
 
 def find_illegal(line, inside=[]):
     if len(line) <= 0:
-        return None
+        return False, reversed(inside)
 
     current = line[0]
     tail = line[1:]
@@ -18,38 +18,53 @@ def find_illegal(line, inside=[]):
     elif current == "]":
         inside_last = new_inside.pop()
         if inside_last != "[":
-            return current
+            return True, current
     elif current == "}":
         inside_last = new_inside.pop()
         if inside_last != "{":
-            return current
+            return True, current
     elif current == ")":
         inside_last = new_inside.pop()
         if inside_last != "(":
-            return current
+            return True, current
     elif current == ">":
         inside_last = new_inside.pop()
         if inside_last != "<":
-            return current
+            return True, current
     return find_illegal(tail, new_inside)
 
 
-result = 0
+result1 = 0
+result2 = []
 for line in lines:
-    illegal = find_illegal(line)
-    if illegal == ")":
-        result += 3
-    if illegal == "]":
-        result += 57
-    if illegal == "}":
-        result += 1197
-    if illegal == ">":
-        result += 25137
+    incomplete, illegal = find_illegal(line)
+    if incomplete:
+        if illegal == ")":
+            result1 += 3
+        elif illegal == "]":
+            result1 += 57
+        elif illegal == "}":
+            result1 += 1197
+        elif illegal == ">":
+            result1 += 25137
+    else:
+        res = 0
+        for i in illegal:
+            if i == "(":
+                res *= 5
+                res += 1
+            elif i == "[":
+                res *= 5
+                res += 2
+            elif i == "{":
+                res *= 5
+                res += 3
+            elif i == "<":
+                res *= 5
+                res += 4
+        result2.append(res)
 
-print(f"Part 1: {result}")
+result2.sort()
 
-correct_lines = []
-for line in lines:
-    illegal = find_illegal(line)
-    if not illegal:
-        correct_lines.append(line)
+print(f"Part 1: {result1}")
+print(f"Part 2: {result2[int(len(result2)/2)]}")
