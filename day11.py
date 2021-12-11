@@ -50,10 +50,12 @@ def do_flashes(lines):
 
 
 flash_count = 0
-for i in range(100):
+for i in range(1000):
     lines = increase_one(lines)
     flashes, lines = do_flashes(lines)
     flash_count += flashes
-    print(f"{i} - {flashes}")
-
-print(f"Part 1 {flash_count}")
+    if i == 99:
+        print(f"Part 1 {flash_count}")
+    if flashes == 100:
+        print(f"Part 2 {i + 1}")
+        break
