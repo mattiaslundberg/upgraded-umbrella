@@ -1,4 +1,4 @@
-from collections import Counter
+from collections import Counter, defaultdict
 
 with open("./input/day14.txt") as f:
     initial = list(f.readline().strip())
@@ -8,26 +8,23 @@ with open("./input/day14.txt") as f:
     for r in raw:
         if "->" in r:
             [start, to] = r.strip().split(" -> ")
-            mappings[start] = to
+            [s1, s2] = list(start)
+            mappings[(s1, s2)] = to
 
 
-def do_map(initial):
-    result = []
-    result.append(initial[0])
-    for i in range(1, len(initial)):
-        insert = mappings.get(f"{initial[i-1]}{initial[i]}")
-        if insert:
-            result += [insert, initial[i]]
-        else:
-            result += [initial[i]]
-    return result
+def do_count(num, initial):
+    counts = Counter(initial)
+    c = Counter(zip(initial, initial[1:]))
+    for _ in range(num):
+        next_c = Counter()
+        for (first, second), count in c.items():
+            new = mappings[(first, second)]
+            next_c[(first, new)] += count
+            next_c[(new, second)] += count
+            counts[new] += count
+        c = next_c
+    return counts.most_common()[0][1] - counts.most_common()[-1][1]
 
 
-state = initial
-for _ in range(10):
-    state = do_map(state)
-
-
-counter = Counter(state)
-values = sorted(counter.values())
-print(f"Part 1: {values[-1] - values[0]}")
+print(f"Part 1: {do_count(10, initial)}")
+print(f"Part 1: {do_count(40, initial)}")
